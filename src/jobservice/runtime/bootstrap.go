@@ -23,6 +23,8 @@ import (
 	"sync"
 	"syscall"
 	"time"
+	"net/http"
+	_ "net/http/pprof"
 
 	"github.com/goharbor/harbor/src/jobservice/job/impl/gdpr"
 
@@ -98,6 +100,15 @@ func (bs *Bootstrap) LoadAndRun(ctx context.Context, cancel context.CancelFunc) 
 		WG:            &sync.WaitGroup{},
 		ErrorChan:     make(chan error, 5), // with 5 buffers
 	}
+
+	// Start pprof server
+	go func() {
+		pprofAddress := ":6060"
+		logger.Infof("Starting pprof server at %s", pprofAddress)
+		if err := http.ListenAndServe(pprofAddress, nil); err != nil {
+			logger.Errorf("Failed to start pprof server: %v", err)
+		}
+	}()
 
 	// Build specified job context
 	if bs.jobContextInitializer != nil {
