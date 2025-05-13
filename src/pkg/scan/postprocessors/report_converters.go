@@ -111,7 +111,7 @@ func (c *nativeToRelationalSchemaConverter) toSchema(ctx context.Context, report
 		cveIDs = append(cveIDs, v.ID)
 	}
 
-	records, err := c.dao.List(ctx, q.New(q.KeyWords{"cve_id": q.NewOrList(cveIDs), "registration_uuid": registrationUUID}))
+	records, err := c.dao.ListMinimal(ctx, q.New(q.KeyWords{"cve_id": q.NewOrList(cveIDs), "registration_uuid": registrationUUID}))
 	if err != nil {
 		return err
 	}

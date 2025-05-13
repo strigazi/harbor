@@ -101,6 +101,37 @@ func (vr *VulnerabilityRecord) Key() string {
 	return fmt.Sprintf("%s-%s-%s", vr.CVEID, vr.Package, vr.PackageVersion)
 }
 
+type VulnerabilityRecordMinimal struct {
+	ID               int64  `orm:"column(id);pk" json:"id"`
+	Severity         string `orm:"column(severity)" json:"severity"`
+	RegistrationUUID string   `orm:"column(registration_uuid)"`
+	CVEID            string   `orm:"column(cve_id)"`
+	Package          string   `orm:"column(package)"`
+	PackageVersion   string   `orm:"column(package_version)"`
+}
+
+// TableName for VulnerabilityRecordMinimal
+func (vr *VulnerabilityRecordMinimal) TableName() string {
+	return "vulnerability_record"
+}
+
+// TableUnique for VulnerabilityRecordMinimal
+func (vr *VulnerabilityRecordMinimal) TableUnique() [][]string {
+	return [][]string{
+		{"cve_id", "registration_uuid", "package", "package_version"},
+	}
+}
+
+// GetID returns the ID of the record
+func (vr *VulnerabilityRecordMinimal) GetID() int64 {
+	return vr.ID
+}
+
+// Key returns the uniq key of the vuln
+func (vr *VulnerabilityRecordMinimal) Key() string {
+	return fmt.Sprintf("%s-%s-%s", vr.CVEID, vr.Package, vr.PackageVersion)
+}
+
 // ReportVulnerabilityRecord is relation table required to optimize data storage for both the
 // vulnerability records and the scan report.
 // identified by composite key (ID, Report)
